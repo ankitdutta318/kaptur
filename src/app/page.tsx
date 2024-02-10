@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
+import Recorder from "./components/Recorder";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Button>Hello</Button>
-    </main>
+    <div className="flex w-full h-full flex-col items-center justify-between md:px-80 px-0">
+      <Recorder />
+    </div>
   );
 }
