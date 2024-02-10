@@ -193,14 +193,14 @@ const Recorder = () => {
               className="bg-transparent text-white !border-white hover:none"
               onClick={() => setIsAudioEnabled((prev) => !prev)}
             >
-              {isAudioEnabled ? <MicOff /> : <Mic />}
+              {isAudioEnabled ? <Mic /> : <MicOff />}
             </Button>
             <Button
               variant={"ghost"}
               className="bg-transparent text-white !border-white hover:none"
               onClick={() => setIsVideoEnabled((prev) => !prev)}
             >
-              {isVideoEnabled ? <VideoOff /> : <Video />}
+              {isVideoEnabled ? <Video /> : <VideoOff />}
             </Button>
           </div>
         ) : null}
