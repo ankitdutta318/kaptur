@@ -8,11 +8,7 @@ import React, {
   useMemo,
 } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  bytesToSize,
-  estimateVideoBitrateForWebM,
-  formatElapsedTime,
-} from "@/utils/utils";
+import { estimateVideoBitrateForWebM, formatElapsedTime } from "@/utils/utils";
 import DiskSpaceInfo from "./DiskSpaceInfo";
 import { VideoSettings } from "@/types";
 import {
@@ -26,6 +22,8 @@ import {
   PauseCircle,
   RefreshCw,
 } from "react-feather";
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
 
 enum RecordingStatus {
   "IDLE",
@@ -47,6 +45,8 @@ const Recorder = () => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const timerRef = useRef<string | number | NodeJS.Timeout | undefined>();
   const [videoSetting, setVideoSetting] = useState<VideoSettings>();
+
+  const { toast } = useToast();
 
   const estimatedBitRate = useMemo(
     () => estimateVideoBitrateForWebM(videoSetting),
@@ -81,10 +81,23 @@ const Recorder = () => {
         videoRef.current.srcObject = stream;
       }
     } catch (error) {
-      handleError(error as Error);
-      // Handle error, e.g., prompt user to allow access to media devices
+      handleError(error as DOMException);
     }
-  }, []);
+  }, [isAudioEnabled, isVideoEnabled]);
+
+  const handleError = (error: DOMException) => {
+    toast({
+      variant: "destructive",
+      title: "Permission Denied",
+      description: String(error),
+      action: (
+        <ToastAction altText="Try again" onClick={startStream}>
+          Try again
+        </ToastAction>
+      ),
+    });
+    console.error("Error accessing media devices:", error);
+  };
 
   useEffect(() => {
     startStream();
@@ -100,10 +113,6 @@ const Recorder = () => {
     }
     return () => clearInterval(timerRef.current);
   }, [recordingStatus, chunks]);
-
-  const handleError = (error: Error) => {
-    console.error("Error accessing media devices:", error);
-  };
 
   const handleDataAvailable = useCallback((event: BlobEvent) => {
     if (event.data.size > 0) {
